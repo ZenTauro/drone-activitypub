@@ -50,13 +50,15 @@ fn main() {
     let result = mastodon.new_status(
         StatusBuilder{
             status: format!(
-                "{} {} with status {}",
+                "{} job: \"{}\" by {} triggered by {}\nrepo: {}",
+                match &response[0].status {
+                    Status::Failure => "Failed",
+                    Status::Success => "Successful"
+                },
+                response[0].message,
                 response[0].author,
                 response[0].event,
-                match &response[0].status {
-                    Status::Failure => "failed",
-                    Status::Success => "success"
-                }
+                repo
             ),
             sensitive: None,
             spoiler_text: None,
@@ -77,7 +79,9 @@ fn register(mastodon_url: &String) -> Result<Mastodon, Box<Error>> {
         .build()?;
 
     let mastodon = cli::authenticate(registration)?;
-    json::to_file(&*mastodon, "mastodon_data.json")?;
+
+    println!("This is your MASTODON_DATA\n{}",
+        json::to_string(&*mastodon)?);
 
     Ok(mastodon)
 }
