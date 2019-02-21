@@ -10,6 +10,10 @@ use elefren::helpers::{cli, json};
 
 use std::env::var;
 use std::error::Error;
+use std::alloc::System;
+
+#[global_allocator]
+static A: System = System;
 
 fn main() {
     // Drone related vars
@@ -30,6 +34,7 @@ fn main() {
 
     // Create mastodon client
     // Authentificate with mastodon
+    // If we don't have a registered client, register one
     let mastodon = if let Ok(data) = json::from_str(&mastodon_data) {
         Mastodon::from(data)
     } else {
@@ -50,7 +55,7 @@ fn main() {
     let result = mastodon.new_status(
         StatusBuilder{
             status: format!(
-                "{} job: \"{}\" by {} triggered by {}\nrepo: {}",
+                "{} job: \"{}\" by {} triggered by {}\n\nRepo: {}",
                 match &response[0].status {
                     Status::Failure => "Failed",
                     Status::Success => "Successful"
