@@ -4,4 +4,4 @@
 *
 
 # Include the final binary
-!*/*/drone-activitypub
+!/target/release/drone-activitypub
