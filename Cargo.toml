@@ -4,13 +4,11 @@ version = "0.1.0"
 authors = ["zentauro <pedrogomezmartin1999@gmail.com>"]
 edition = "2018"
 
-[dependencies]
-rusty_drone = "^0.1"
-
 [dependencies.elefren]
 version     = "0.16.0"
 features    = ["json"]
 
 [profile.release]
-panic = "abort"
 lto = true
+codegen-units = 1
+opt-level = "z"

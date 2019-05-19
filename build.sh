@@ -36,5 +36,5 @@ strip ./target/release/drone-activitypub ||\
 # And finish by creating the container
 info_log "Creating container"
 
-docker build -t "${DOCKER_ID}/drone-activitypub:latest" . ||\
+docker build -t "${DOCKER_ID}/drone-activitypub:v2.0.0" . ||\
     fail_log "Container failed"

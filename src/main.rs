@@ -15,10 +15,6 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 extern crate elefren;
-extern crate rusty_drone;
-
-use rusty_drone::structs::*;
-use rusty_drone::Client as DrClie;
 
 use elefren::prelude::*;
 use elefren::scopes::{Scopes, Write};
@@ -32,15 +28,9 @@ use std::alloc::System;
 static A: System = System;
 
 fn main() {
-    // Drone related vars
-    let token          = var("DRONE_SECRET_TOKEN")
-        .expect("Failed to retrieve DRONE_TOKEN");
-    let drone_base_url = var("DRONE_BASE_URL")
-        .expect("Failed to retrieve the base url of the Drone server");
-    let repo           = var("DRONE_REPO")
-       .expect("Failed to retrieve the repo to watch");
-    let owner          = var("DRONE_OWNER")
-        .expect("Failed to retrieve the repo owner");
+    // Obtain the message from the plugin configuration
+    let message = var("DRONE_MESSAGE")
+        .expect("Failed to retrieve the message to post, please set \"message\"");
 
     // Mastodon related vars
     let mastodon_url   = var("DRONE_MASTODON_URL")
@@ -58,29 +48,10 @@ fn main() {
             .expect("First time registration failed")
     };
 
-    // Create Drone client
-    let drone_client = DrClie::new(token, drone_base_url);
-
-    // Get response from Drone
-    let response = drone_client.get_build_list(
-        &owner,
-        &repo
-    ).expect("Error while communicating with the drone server");
-
     // Create the toot and post it
     let result = mastodon.new_status(
-        StatusBuilder{
-            status: format!(
-                "{} job: \"{}\" by {} triggered by {}\n\nRepo: {}",
-                match &response[0].status {
-                    Status::Failure => "Failed",
-                    Status::Success => "Successful"
-                },
-                response[0].message,
-                response[0].author,
-                response[0].event,
-                repo
-            ),
+        StatusBuilder {
+            status: message,
             sensitive: None,
             spoiler_text: None,
             language: None,
@@ -88,6 +59,7 @@ fn main() {
         }
     ).expect("Error while communicating with mastodon");
 
+    // Log the reply from mastodon
     println!("Data from mastodon: {}",
              result.content
     );
