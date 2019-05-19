@@ -24,7 +24,7 @@ docker run \
     -e DRONE_MESSAGE=${DRONE_MESSAGE} \
     -e DRONE_MASTODON_URL=${DRONE_MASTODON_URL} \
     -e DRONE_MASTODON_DATA=${DRONE_MASTODON_DATA} \
-    --rm zentauro/drone-activitypub:0.0.1
+    --rm zentauro/drone-activitypub:v2.0.0
 ```
 
 ## Inside drone
